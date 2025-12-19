@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+IFS=$'\n\t'
+# Add own directory to PATH to find sibling scripts (robustness)
+export PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd):$PATH"
+# 🏴 SAKURAJIMA CLI (skr)
+# The unified entry point for the Sakurajima environment.
+
+VERSION="0.1.0-alpha"
+BOLD=$'\033[1m'
+RESET=$'\033[0m'
+
+help() {
+  if command -v sakurajima-logo >/dev/null; then
+    sakurajima-logo
+  else
+    echo "${BOLD}SAKURAJIMA${RESET} CLI ${VERSION}"
+  fi
+  cat <<EOF
+
+${BOLD}Usage:${RESET} skr <command> [args]
+
+${BOLD}Core:${RESET}
+  verify         Run system verification (verify-system)
+  update         Update system and tools (update-all)
+  uninstall      Uninstall Sakurajima environment
+  help           Show this help
+
+${BOLD}Workspaces:${RESET}
+  new <client>   Provision a new client (new-client)
+  focus <client> Focus a client terminal and start time tracking
+  unfocus, stop  Stop current time tracking session
+  stats [client] View time tracking statistics
+
+${BOLD}Infrastructure:${RESET}
+  infra up       Start local infra (Mongo, Postgres, Redis)
+  infra down     Stop local infra
+  infra backup   Backup databases to ~/workspace/backups
+  infra status   Show docker status
+
+${BOLD}Shortcuts:${RESET}
+  i, infra       Alias for 'infra' commands
+  n, new         Alias for 'new'
+  v, verify      Alias for 'verify'
+  u, update      Alias for 'update'
+
+${BOLD}Tools:${RESET}
+  scribe         Record and transcribe meetings (meeting-scribe)
+  build-chromium Build Chromium from source
+  build-webkit   Build WebKit from source
+
+EOF
+}
+
+cmd_infra() {
+  local sub="${1:-status}"
+  case "$sub" in
+    up|start)    exec sakurajima-infra-up ;;
+    down|stop)   exec sakurajima-infra-down ;;
+    backup|dump) exec sakurajima-infra-backup ;;
+    status|ps)   docker compose -f ~/setup/infra/docker-compose.yml ps ;;
+    *) echo "Unknown infra command. Try: up, down, backup, status"; exit 1 ;;
+  esac
+}
+
+# Dispatcher
+CMD="${1:-help}"
+shift || true
+
+case "$CMD" in
+  verify|v)      exec verify-system "$@" ;;
+  update|u)      exec update-all "$@" ;;
+  uninstall)     exec uninstall "$@" ;;
+  new|n)         exec new-client "$@" ;;
+  infra|i)       cmd_infra "$@" ;;
+  focus)
+    # Fallback to simple directory switch info if script not in path
+    RAYCAST_SCRIPT="$HOME/raycast/scripts/sakurajima/sakurajima-focus-client.sh"
+    if command -v sakurajima-focus-client >/dev/null; then
+       exec sakurajima-focus-client "$@"
+    elif [[ -x "$RAYCAST_SCRIPT" ]]; then
+       exec "$RAYCAST_SCRIPT" "$@"
+    else
+       echo "Use Raycast to focus clients, or 'cd ~/workspace/clients/$1'"
+    fi
+    ;;
+  unfocus|stop)  exec sakurajima-unfocus ;;
+  stats)         exec sakurajima-stats "$@" ;;
+  time-cleanup)  exec sakurajima-time-cleanup ;;
+  scribe)        exec skr-scribe "$@" ;;
+  build-chromium) exec build-chromium "$@" ;;
+  build-webkit)  exec build-webkit "$@" ;;
+  help|h|--help) help ;;
+  *)
+    echo "Unknown command: $CMD"
+    help
+    exit 1
+    ;;
+esac

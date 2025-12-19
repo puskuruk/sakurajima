@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+IFS=$'\n\t'
+
+CONFIRM_BIN="${HOME}/.local/bin/sakurajima-confirm"
+[[ -x "$CONFIRM_BIN" ]] || CONFIRM_BIN="${HOME}/setup/scripts/sakurajima-confirm"
+[[ -x "$CONFIRM_BIN" ]] || { echo "❌ sakurajima-confirm missing" >&2; exit 3; }
+
+command -v kubectl >/dev/null 2>&1 || { echo "❌ kubectl not found" >&2; exit 3; }
+
+ctx="$(command kubectl config current-context 2>/dev/null || true)"
+
+ns=""
+for ((i=1; i<=$#; i++)); do
+  arg="${!i}"
+  if [[ "$arg" == "-n" || "$arg" == "--namespace" ]]; then
+    j=$((i+1))
+    ns="${!j:-}"
+  elif [[ "$arg" == --namespace=* ]]; then
+    ns="${arg#--namespace=}"
+  fi
+done
+
+CTX_PROD_REGEX="${SAKURAJIMA_PROD_CONTEXT_REGEX:-(?i)(^|[-_/\.])(prod|production)([-_/\.]|$)}"
+NS_PROD_REGEX="${SAKURAJIMA_PROD_NAMESPACE_REGEX:-(?i)^(prod|production)$}"
+
+is_prod=false
+[[ -n "$ctx" && "$ctx" =~ $CTX_PROD_REGEX ]] && is_prod=true
+[[ -n "$ns" && "$ns" =~ $NS_PROD_REGEX ]] && is_prod=true
+
+if [[ "$is_prod" == "true" ]]; then
+  "$CONFIRM_BIN" "Kubernetes PROD detected (context='${ctx:-?}', namespace='${ns:-default}')" "kubectl $*"
+fi
+
+exec command kubectl "$@"

@@ -1,0 +1,41 @@
+# 🏴 SAKURAJIMA STARSHIP — 0.1.0-alpha
+
+add_newline = true
+command_timeout = 800
+
+# Use triple quotes for multi-line format safely
+format = """
+$directory\
+$custom\
+$git_branch\
+$git_status\
+$nodejs\
+$golang\
+$python\
+$rust\
+$docker_context\
+$character\
+"""
+
+[directory]
+truncate_to_repo = false
+truncation_length = 3
+
+# Client segment: only appears when SAKURAJIMA_CLIENT is set
+[custom.sakurajima_client]
+command = "echo \"$SAKURAJIMA_CLIENT\""
+when = "test -n \"$SAKURAJIMA_CLIENT\""
+format = "  [client:$output]($style)"
+style = "bold yellow"
+
+[git_branch]
+format = " [$branch]($style)"
+style = "bold purple"
+
+[git_status]
+format = " [$all_status$ahead_behind]($style)"
+style = "bold red"
+
+[character]
+success_symbol = "❯"
+error_symbol = "❯"

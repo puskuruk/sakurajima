@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+# 🏴 SAKURAJIMA CONFIRM - 0.1.0-alpha
+
+# Usage: sakurajima-confirm "Prompt text" || exit 1
+
+PROMPT="${1:-Are you sure?}"
+
+printf "\n⚠️  %s [y/N] " "$PROMPT"
+read -r response
+case "$response" in
+    [yY][eE][sS]|[yY])
+        true
+        ;;
+    *)
+        echo "Cancelled."
+        false
+        ;;
+esac

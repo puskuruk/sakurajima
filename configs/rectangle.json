@@ -1,0 +1,47 @@
+{
+  "defaults": {
+    "launchOnLogin": { "bool": true },
+    "alternateDefaultShortcuts": { "bool": true },
+    "subsequentExecutionMode": { "int": 2 }
+  },
+  "shortcuts": {
+    "leftHalf": {
+      "keyCode": 4,
+      "modifierFlags": 786689
+    },
+    "rightHalf": {
+      "keyCode": 37,
+      "modifierFlags": 786689
+    },
+    "topHalf": {
+      "keyCode": 38,
+      "modifierFlags": 786689
+    },
+    "bottomHalf": {
+      "keyCode": 40,
+      "modifierFlags": 786689
+    },
+    "maximize": {
+      "keyCode": 36,
+      "modifierFlags": 786689
+    },
+    "center": {
+      "keyCode": 8,
+      "modifierFlags": 786689
+    },
+    "leftThird": {
+      "keyCode": 4,
+      "modifierFlags": 1573009
+    },
+    "centerThird": {
+      "keyCode": 40,
+      "modifierFlags": 1573009
+    },
+    "rightThird": {
+      "keyCode": 37,
+      "modifierFlags": 1573009
+    }
+  },
+  "bundleId": "com.knollsoft.Rectangle",
+  "version": "1"
+}

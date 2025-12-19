@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+IFS=$'\n\t'
+
+CONFIRM_BIN="${HOME}/.local/bin/sakurajima-confirm"
+[[ -x "$CONFIRM_BIN" ]] || CONFIRM_BIN="${HOME}/setup/scripts/sakurajima-confirm"
+[[ -x "$CONFIRM_BIN" ]] || { echo "❌ sakurajima-confirm missing" >&2; exit 3; }
+
+command -v terraform >/dev/null 2>&1 || { echo "❌ terraform not found" >&2; exit 3; }
+
+TF_PROD_REGEX="${SAKURAJIMA_PROD_TF_WORKSPACE_REGEX:-(?i)^(prod|production)$}"
+ENV_PROD_REGEX="${SAKURAJIMA_PROD_ENV_REGEX:-(?i)^(prod|production)$}"
+
+ws=""
+if [[ -n "$(ls -1 *.tf 2>/dev/null | head -n 1 || true)" || -d ".terraform" ]]; then
+  ws="$(command terraform workspace show 2>/dev/null || true)"
+fi
+
+tfw="${TF_WORKSPACE:-}"
+env1="${TF_VAR_environment:-}"
+env2="${ENVIRONMENT:-}"
+env3="${APP_ENV:-}"
+
+is_prod=false
+[[ -n "$ws" && "$ws" =~ $TF_PROD_REGEX ]] && is_prod=true
+[[ -n "$tfw" && "$tfw" =~ $TF_PROD_REGEX ]] && is_prod=true
+[[ -n "$env1" && "$env1" =~ $ENV_PROD_REGEX ]] && is_prod=true
+[[ -n "$env2" && "$env2" =~ $ENV_PROD_REGEX ]] && is_prod=true
+[[ -n "$env3" && "$env3" =~ $ENV_PROD_REGEX ]] && is_prod=true
+
+if [[ "$is_prod" == "true" ]]; then
+  "$CONFIRM_BIN" "Terraform PROD detected (workspace='${ws:-?}', TF_WORKSPACE='${tfw:-}', env='${env1:-$env2}')" "terraform $*"
+fi
+
+exec command terraform "$@"

@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+IFS=$'\n\t'
+# 🎙 SAKURAJIMA MEETING SCRIBE
+# Records audio (default input) and transcribes with local Whisper.
+
+info(){ printf "ℹ️  %s\n" "$*"; }
+ok(){ printf "✅ %s\n" "$*"; }
+warn(){ printf "⚠️  %s\n" "$*"; }
+die(){ printf "❌ %s\n" "$*"; exit "${2:-1}"; }
+
+# Config
+DATA_DIR="$HOME/workspace/data/recordings"
+timestamp="$(date +%Y-%m-%d_%H-%M-%S)"
+SESSION_ID="${2:-$timestamp}"
+AUDIO_FILE="$DATA_DIR/$SESSION_ID.wav"
+TXT_FILE="$DATA_DIR/$SESSION_ID.txt"
+
+ensure_dirs() {
+  mkdir -p "$DATA_DIR"
+}
+
+check_deps() {
+  command -v ffmpeg >/dev/null || die "ffmpeg (brew install ffmpeg) required."
+  command -v uv >/dev/null || die "uv (brew install uv) required."
+}
+
+start_recording() {
+  ensure_dirs
+  check_deps
+  
+  if [[ -f "$AUDIO_FILE" ]]; then
+    warn "File exists: $AUDIO_FILE"
+    read -p "Overwrite? [y/N] " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then die "Aborted."; fi
+  fi
+
+  info "🎙  Recording initiated..."
+  info "   File: $AUDIO_FILE"
+  info "   Input: Default System Input (Ensure BlackHole is set if capturing system audio!)"
+  info "   Press [q] then [Enter] to stop recording (or Ctrl+C)."
+
+  # ffmpeg record from default input
+  # -f avfoundation -i ":0" means default audio device on macOS
+  ffmpeg -y -f avfoundation -i ":0" "$AUDIO_FILE" 2>/dev/null || true
+
+  ok "Recording saved: $AUDIO_FILE"
+  
+  # Auto-transcribe
+  transcribe_audio "$AUDIO_FILE"
+}
+
+transcribe_audio() {
+  local input="${1:-}"
+  [[ -f "$input" ]] || die "Audio file not found: $input"
+  
+  info "🧠 Transcribing with Whisper (local)..."
+  info "   Model: base (auto-downloading if needed)"
+  
+  # Use uv to run whisper without global install mess
+  # package: openai-whisper, binary: whisper
+  uv tool run --from openai-whisper whisper "$input" --model base --output_format txt --output_dir "$(dirname "$input")"
+  
+  ok "Transcription Complete."
+  local output_txt="${input%.*}.txt"
+  if [[ -f "$output_txt" ]]; then
+    cat "$output_txt"
+  else
+    warn "Output file expected at $output_txt"
+  fi
+}
+
+usage() {
+  cat <<EOF
+Usage: scribe <command> [session_name]
+
+Commands:
+  start       Start a new recording session
+  transcribe  Transcribe an existing file (path)
+  list        List recordings
+EOF
+}
+
+CMD="${1:-help}"
+
+case "$CMD" in
+  start|record)   start_recording "$SESSION_ID" ;;
+  transcribe)     transcribe_audio "$2" ;;
+  list)           ls -lh "$DATA_DIR" ;;
+  *)              usage ;;
+esac

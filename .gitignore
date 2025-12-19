@@ -1,0 +1,60 @@
+# Sakurajima .gitignore
+
+# Personal configurations (overrides for templates)
+.gitconfig.local
+.zshrc.local
+
+# Generated files
+raycast/scripts/sakurajima/*.sh
+configs/aerospace.toml
+*.ansi
+*.svg
+*.cast
+demo.cast
+
+# Time tracking database (contains sensitive work data)
+.config/sakurajima/time-tracking.db
+.config/sakurajima/active-session.state
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs
+logs/
+*.log
+
+# Backups
+*.bak
+*~
+.backup/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+
+# Temporary files
+tmp/
+*.tmp
+
+# Node modules (if any scripts use node)
+node_modules/
+
+# Python (if any scripts use python)
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+
+# Environment variables
+.env
+.env.local
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3

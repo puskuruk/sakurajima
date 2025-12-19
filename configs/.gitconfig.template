@@ -1,0 +1,43 @@
+# SAKURAJIMA GITCONFIG — v5.0
+# NOTE: Personal identity is set in ~/.gitconfig.local (not version controlled)
+# This is just a template. The installer will prompt for your name/email.
+
+[init]
+    defaultBranch = main
+
+[core]
+    autocrlf = input
+    excludesfile = ~/.config/git/ignore
+    pager = delta
+
+[interactive]
+    diffFilter = delta --color-only
+
+[delta]
+    navigate = true
+    light = false
+
+[pull]
+	rebase = true
+
+[rebase]
+    autoStash = true
+
+[push]
+    default = current
+
+[fetch]
+    prune = true
+    pruneTags = true
+
+[credential]
+    helper = osxkeychain
+
+[include]
+    path = ~/.gitconfig.local
+
+# Client-specific git identities are automatically created by 'skr new <client>'
+# Each client gets its own config at: ~/.config/git/clients/<client>.gitconfig
+# Example:
+#   [includeIf "gitdir:~/workspace/clients/acme/"]
+#       path = ~/.config/git/clients/acme.gitconfig

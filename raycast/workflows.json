@@ -1,0 +1,16 @@
+{
+  "name": "Sakurajima — Puskuruk",
+  "version": "0.1.0-alpha",
+  "scripts_dir": "~/raycast/scripts/sakurajima",
+  "commands": [
+    "sakurajima-verify",
+    "sakurajima-update-aerospace",
+    "sakurajima-infra-up",
+    "sakurajima-infra-down",
+    "sakurajima-focus-client",
+    "sakurajima-focus-<client>"
+  ],
+  "notes": [
+    "This is a repo manifest; Raycast itself uses script headers inside each script."
+  ]
+}

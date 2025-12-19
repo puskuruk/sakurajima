@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  shellcheck:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: brew install shellcheck
+
+      - name: Run shellcheck on scripts
+        run: |
+          find scripts -type f -name "*.sh" -exec shellcheck {} +
+          shellcheck install.sh
+
+  test:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install bats-core
+        run: brew install bats-core
+
+      - name: Run bats tests
+        run: bats tests/
+
+  syntax-check:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check bash syntax
+        run: |
+          find scripts -type f -name "*.sh" -exec bash -n {} \;
+          bash -n install.sh
+
+  lint:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for trailing whitespace
+        run: |
+          if grep -rn '[[:blank:]]$' scripts/*.sh install.sh; then
+            echo "Found trailing whitespace"
+            exit 1
+          fi
+
+      - name: Check for tabs (prefer spaces)
+        run: |
+          if grep -Pn '\t' scripts/*.sh install.sh 2>/dev/null | grep -v "IFS="; then
+            echo "Found tabs (use spaces for indentation)"
+            exit 1
+          fi

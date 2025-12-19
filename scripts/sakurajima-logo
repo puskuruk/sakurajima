@@ -1,0 +1,146 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ESC=$'\033['
+RESET="${ESC}0m"
+BOLD="${ESC}1m"
+
+# Colors (256-color)
+SKY="${ESC}38;5;117m"
+ASH="${ESC}38;5;255m"
+
+ROCK0="${ESC}38;5;234m"
+ROCK1="${ESC}38;5;236m"
+ROCK2="${ESC}38;5;240m"
+ROCK3="${ESC}38;5;244m"
+
+LAVA1="${ESC}38;5;196m"
+LAVA2="${ESC}38;5;202m"
+LAVA3="${ESC}38;5;208m"
+
+GREEN="${ESC}38;5;34m"
+SEA1="${ESC}38;5;25m"
+SEA2="${ESC}38;5;33m"
+SEA3="${ESC}38;5;39m"
+
+SAK1="${ESC}38;5;205m"
+SAK2="${ESC}38;5;212m"
+SAK3="${ESC}38;5;218m"
+
+cols="$(tput cols 2>/dev/null || echo 100)"
+[[ "$cols" =~ ^[0-9]+$ ]] || cols=100
+(( cols < 80 )) && cols=80
+
+sp(){ printf "%*s" "$1" ""; }
+rep(){ printf "%*s" "$1" "" | tr ' ' "$2"; }
+
+# Center plain (no ANSI inside text)
+cplain(){
+  local color="$1" text="$2"
+  local w=${#text}
+  local pad=$(( (cols - w) / 2 ))
+  (( pad < 0 )) && pad=0
+  sp "$pad"
+  printf "%b%s%b\n" "$color" "$text" "$RESET"
+}
+
+# Center segments: args are (color,text) pairs, text MUST be plain
+csegs(){
+  local total=0; local args=("$@"); local i=0
+  while (( i < ${#args[@]} )); do
+    total=$(( total + ${#args[i+1]} ))
+    i=$(( i+2 ))
+  done
+  local pad=$(( (cols - total) / 2 ))
+  (( pad < 0 )) && pad=0
+  sp "$pad"
+  i=0
+  while (( i < ${#args[@]} )); do
+    printf "%b%s" "${args[i]}" "${args[i+1]}"
+    i=$(( i+2 ))
+  done
+  printf "%b\n" "$RESET"
+}
+
+# Full-width solid row (no wrap)
+fullrow(){
+  local color="$1"
+  printf "%b%s%b\n" "$color" "$(rep "$cols" "█")" "$RESET"
+}
+
+clear
+
+echo
+cols="${COLUMNS:-$(tput cols 2>/dev/null || echo 80)}"
+TEXT="S❀A❀K❀U❀R❀A❀J❀I❀M❀A"
+VISIBLE_LEN=${#TEXT}
+pad=$(( (cols - VISIBLE_LEN) / 2 )); ((pad<0))&&pad=0
+
+printf "%*s" "$pad" ""
+printf "%bS%b❀%bA%b❀%bK%b❀%bU%b❀%bR%b❀%bA%b❀%bJ%b❀%bI%b❀%bM%b❀%bA%b\n" \
+  "${BOLD}${ROCK0}" "${SAK2}" "${BOLD}${ROCK0}" "${SAK2}" \
+  "${BOLD}${ROCK0}" "${SAK2}" "${BOLD}${ROCK0}" "${SAK2}" \
+  "${BOLD}${ROCK0}" "${SAK2}" "${BOLD}${ROCK0}" "${SAK2}" \
+  "${BOLD}${ROCK0}" "${SAK2}" "${BOLD}${ROCK0}" "${SAK2}" \
+  "${BOLD}${ROCK0}" "${SAK2}" "${BOLD}${ROCK0}" "${RESET}"
+echo
+
+# ── SKY (minimal) ─────────────────────────────────────────
+cplain "$SKY" "·            ·             ·            ·"
+cplain "$SKY" "·       ·            ·             ·       ·"
+echo
+
+# ── SAKURA (AIR ONLY) ────────────────────────────────────
+csegs "$ASH" "" "$SAK3" "❀   ❀   ❀   ❀   ❀   ❀   ❀   ❀" "$ASH" ""
+csegs "$ASH" "" "$SAK2" "  ❀   ❀   ❀   ❀   ❀   ❀   ❀  " "$ASH" ""
+csegs "$ASH" "" "$SAK1" "❀   ❀   ❀   ❀   ❀   ❀   ❀   ❀" "$ASH" ""
+echo
+
+# ── PLUME (centered) ─────────────────────────────────────
+cplain "$ASH" "░░░▒▒▒▒▒▒▒▒▒░░░"
+cplain "$ASH" "░▒▒▒██████████▒▒▒░"
+cplain "$ASH" "░▒████████████▒░"
+cplain "$ASH" "░▒██████████▒░"
+cplain "$ASH" "░▒██████▒░"
+cplain "$ASH" "░▒██▒░"
+echo
+
+# ── VOLCANO / MOUNTAIN (detailed, colored, symmetric) ────
+# Use a clean conic silhouette and add depth:
+# - outer frame: ROCK0
+# - inner body: ROCK2/ROCK3
+# - core: LAVA1/2/3 centered
+
+# top cap (solid, sharp)
+cplain "$ROCK0" "█████"
+cplain "$ROCK0" "█████████"
+cplain "$ROCK0" "█████████████"
+
+# upper slopes (subtle inner tone)
+csegs "$ROCK0" "██████" "$ROCK2" "█████" "$ROCK0" "██████"
+csegs "$ROCK0" "████████" "$ROCK2" "███████" "$ROCK0" "████████"
+csegs "$ROCK0" "██████████" "$ROCK2" "█████████" "$ROCK0" "██████████"
+
+# mid slopes (more depth)
+csegs "$ROCK0" "████████████" "$ROCK2" "███████████" "$ROCK0" "████████████"
+csegs "$ROCK0" "██████████████" "$ROCK3" "█████████████" "$ROCK0" "██████████████"
+
+# shoulder shading band (wide)
+csegs "$ROCK0" "████████████████" "$ROCK3" "█████████████████" "$ROCK0" "████████████████"
+
+# igneous core zone (centered, symmetric, detailed)
+# frame + lava gradient + frame
+csegs "$ROCK0" "██████████" "$ROCK1" "████" "$LAVA1" "████████" "$LAVA2" "████████" "$LAVA3" "████████" "$ROCK1" "████" "$ROCK0" "██████████"
+csegs "$ROCK0" "████████" "$ROCK1" "██████" "$LAVA2" "██████████████████" "$LAVA1" "██████" "$ROCK1" "██████" "$ROCK0" "████████"
+csegs "$ROCK0" "██████" "$ROCK1" "████████" "$LAVA3" "████████████████████" "$LAVA2" "████████" "$ROCK1" "████████" "$ROCK0" "██████"
+
+# ── LAND + SEA (NO SAKURA) ───────────────────────────────
+fullrow "$GREEN"
+fullrow "$SEA1"
+fullrow "$SEA2"
+fullrow "$SEA3"
+
+# ── WORDMARK ────────────────────────────────────────────
+echo
+printf "%b\n" "${SAK2}❀${RESET} ${ASH}My mind is a mountain${RESET}"
+echo
