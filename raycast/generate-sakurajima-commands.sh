@@ -73,7 +73,7 @@ write_script "$TARGET/sakurajima-open-terminal.sh" \
 # @raycast.description Opens Terminal with a fresh shell in the default directory
 
 set -Eeuo pipefail
-IFS=$'\n\t'
+IFS=$'\''\n\t'\''
 
 osascript <<OSA
 tell application "Terminal"

@@ -1,0 +1,109 @@
+{
+  "global": {
+    "theme": "auto",
+    "floatingBar": false,
+    "noBarBg": false,
+    "noColorInData": false,
+    "bottomBar": false,
+    "inlineSpacesOptions": false,
+    "disableNotifications": false,
+    "compactMode": true,
+    "widgetMaxWidth": "160px",
+    "spacesBackgroundColorAsForeground": false,
+    "widgetsBackgroundColorAsForeground": false,
+    "font": "JetBrains Mono, Menlo, monospace",
+    "fontSize": "11px",
+    "yabaiPath": "",
+    "windowManager": "aerospace",
+    "aerospacePath": "/opt/homebrew/bin/aerospace",
+    "shell": "sh",
+    "terminal": "Terminal",
+    "slidingAnimationPace": 4,
+    "externalConfigFile": true,
+    "enableServer": false,
+    "serverSocketPort": 7777
+  },
+  "themes": {
+    "lightTheme": "NightShiftLight",
+    "darkTheme": "ShadesOfPurple"
+  },
+  "process": {
+    "centered": false,
+    "showCurrentSpaceMode": true,
+    "hideWindowTitle": false,
+    "displayOnlyCurrent": true,
+    "expandAllProcesses": false,
+    "displaySkhdMode": false,
+    "displayStackIndex": true,
+    "displayOnlyIcon": false
+  },
+  "spacesDisplay": {
+    "exclusions": "",
+    "titleExclusions": "",
+    "spacesExclusions": "",
+    "exclusionsAsRegex": false,
+    "displayAllSpacesOnAllScreens": false,
+    "hideDuplicateAppsInSpaces": true,
+    "displayStickyWindowsSeparately": false,
+    "hideEmptySpaces": false,
+    "showOptionsOnHover": true,
+    "switchSpacesWithoutYabai": true
+  },
+  "widgets": {
+    "weatherWidget": false,
+    "netstatsWidget": false,
+    "cpuWidget": false,
+    "gpuWidget": false,
+    "memoryWidget": false,
+    "batteryWidget": true,
+    "wifiWidget": true,
+    "vpnWidget": false,
+    "zoomWidget": false,
+    "soundWidget": true,
+    "micWidget": false,
+    "dateWidget": true,
+    "timeWidget": true,
+    "keyboardWidget": false,
+    "spotifyWidget": false,
+    "cryptoWidget": false,
+    "stockWidget": false,
+    "youtubeMusicWidget": false,
+    "musicWidget": false,
+    "mpdWidget": false,
+    "browserTrackWidget": false,
+    "userWidget": false
+  },
+  "batteryWidgetOptions": {
+    "refreshFrequency": 10000,
+    "toggleCaffeinateOnClick": true,
+    "caffeinateOption": ""
+  },
+  "networkWidgetOptions": {
+    "refreshFrequency": 20000,
+    "networkDevice": "en0",
+    "hideWifiIfDisabled": false,
+    "toggleWifiOnClick": false,
+    "hideNetworkName": false
+  },
+  "soundWidgetOptions": {
+    "refreshFrequency": 20000
+  },
+  "dateWidgetOptions": {
+    "refreshFrequency": 30000,
+    "shortDateFormat": true,
+    "locale": "en-US",
+    "calendarApp": ""
+  },
+  "timeWidgetOptions": {
+    "refreshFrequency": 1000,
+    "hour12": true,
+    "dayProgress": false,
+    "showSeconds": false
+  },
+  "userWidgetOptions": {
+    "refreshFrequency": false
+  },
+  "customStyles": {
+    "styles": "/* Sakurajima simple-bar custom styles */\n.simple-bar {\n  font-family: 'JetBrains Mono', 'SF Pro', monospace;\n}\n\n.simple-bar--spaces .space {\n  font-weight: 500;\n}\n\n.simple-bar--spaces .space--focused {\n  font-weight: 700;\n}\n"
+  }
+}

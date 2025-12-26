@@ -1,0 +1,36 @@
+# =============================================================================
+# SAKURAJIMA TOOL VERSIONS
+# =============================================================================
+# Managed by mise (https://mise.jdx.dev/)
+#
+# This file defines the tool versions for the Sakurajima environment.
+# mise automatically activates these versions when entering ~/setup.
+#
+# Usage:
+#   mise install        Install all tools defined here
+#   mise use node@22    Pin Node.js to version 22
+#   mise list           List installed tools
+#   mise outdated       Show outdated tools
+# =============================================================================
+
+[tools]
+# JavaScript/TypeScript runtime (LTS for stability)
+node = "lts"
+
+# Go programming language (latest stable)
+# go = "latest"
+
+# Python (for build tools, scripts)
+# python = "3.12"
+
+# Rust (for performance-critical tools)
+# rust = "stable"
+
+# Java (for JVM-based tools if needed)
+# java = "21"
+
+[settings]
+# Always use the latest version of plugins
+experimental = true
+# Show installation progress
+quiet = false

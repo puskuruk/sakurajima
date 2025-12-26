@@ -165,8 +165,8 @@ version_gte() {
     local version1="$1"
     local version2="$2"
 
-    # Use sort -V (version sort) to compare
-    printf '%s\n%s\n' "$version1" "$version2" | sort -V -C
+    # version1 >= version2 means: when sorted ascending, version2 comes first (or equal)
+    printf '%s\n%s\n' "$version2" "$version1" | sort -V -C
 }
 
 # Check if running on macOS

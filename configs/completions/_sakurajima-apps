@@ -1,0 +1,100 @@
+#compdef sakurajima-apps
+
+# Zsh completion for sakurajima-apps
+# Dynamically loads app names from the catalog
+
+_sakurajima-apps() {
+  local -a commands
+  local catalog="$HOME/setup/configs/apps-catalog.json"
+
+  commands=(
+    'list:List available applications'
+    'install:Install an application'
+    'search:Search for applications'
+    'info:Show detailed information about an app'
+    'running:Show running Docker containers'
+    'stop:Stop a Docker container'
+    'remove:Remove a Docker container'
+    'logs:Show logs for a Docker container'
+  )
+
+  _arguments -C \
+    '1: :->command' \
+    '2: :->subcommand' \
+    '3: :->app'
+
+  case $state in
+    command)
+      _describe -t commands 'sakurajima-apps command' commands
+      ;;
+
+    subcommand)
+      case $words[2] in
+        list)
+          local -a list_types
+          list_types=(
+            'docker:List Docker applications'
+            'brew:List Homebrew applications'
+            'all:List all applications'
+          )
+          _describe -t list_types 'list type' list_types
+          ;;
+
+        install)
+          local -a install_types
+          install_types=(
+            'docker:Install a Docker application'
+            'brew:Install a Homebrew application'
+          )
+          _describe -t install_types 'install type' install_types
+          ;;
+      esac
+      ;;
+
+    app)
+      # Dynamically load app names from catalog
+      if [[ ! -f "$catalog" ]]; then
+        return 1
+      fi
+
+      case $words[2] in
+        install)
+          case $words[3] in
+            docker)
+              # Get Docker app slugs with descriptions
+              local -a docker_apps
+              docker_apps=(${(f)"$(jq -r '.docker[] | "\(.slug):\(.description)"' "$catalog" 2>/dev/null)"})
+              _describe -t docker_apps 'docker application' docker_apps
+              ;;
+
+            brew)
+              # Get Homebrew app slugs with descriptions
+              local -a brew_apps
+              brew_apps=(${(f)"$(jq -r '.homebrew[] | "\(.slug):\(.description)"' "$catalog" 2>/dev/null)"})
+              _describe -t brew_apps 'homebrew application' brew_apps
+              ;;
+          esac
+          ;;
+
+        stop|remove|logs)
+          # Get running container names (remove sakurajima- prefix for completion)
+          local -a containers
+          containers=(${(f)"$(docker ps --filter 'name=sakurajima-' --format '{{.Names}}' 2>/dev/null | sed 's/sakurajima-//')"})
+          _describe -t containers 'running container' containers
+          ;;
+
+        search|info)
+          # Offer all apps for search/info
+          local -a all_apps
+          all_apps=(
+            ${(f)"$(jq -r '.docker[] | "\(.slug):\(.description)"' "$catalog" 2>/dev/null)"}
+            ${(f)"$(jq -r '.homebrew[] | "\(.slug):\(.description)"' "$catalog" 2>/dev/null)"}
+          )
+          _describe -t all_apps 'application' all_apps
+          ;;
+      esac
+      ;;
+  esac
+}
+
+_sakurajima-apps "$@"

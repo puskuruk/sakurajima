@@ -107,15 +107,20 @@
 
 @test "install.sh exists and has proper structure" {
   local install_script="${BATS_TEST_DIRNAME}/../install.sh"
+  local install_ts="${BATS_TEST_DIRNAME}/../src/install.ts"
 
+  # Bootstrap script exists and is executable
   [ -f "$install_script" ]
   [ -x "$install_script" ]
 
-  # Should have require_file checks
-  grep -q "require_file" "$install_script"
+  # Bootstrap should set up Homebrew and hand off to zx
+  grep -q "brew" "$install_script"
+  grep -q "zx" "$install_script"
 
-  # Should have ensure_symlink functions
-  grep -q "ensure_symlink" "$install_script"
+  # Main installer (TypeScript) exists and uses proper functions
+  [ -f "$install_ts" ]
+  grep -q "fileExists" "$install_ts"
+  grep -q "ensureSymlink" "$install_ts"
 }
 
 @test "skr CLI script exists and is properly structured" {

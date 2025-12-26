@@ -41,8 +41,11 @@ logs/
 tmp/
 *.tmp
 
-# Node modules (if any scripts use node)
+# Node.js
 node_modules/
+package-lock.json
+dist/
+*.tsbuildinfo
 
 # Python (if any scripts use python)
 __pycache__/
