@@ -1,0 +1,32 @@
+{
+  "name": "sakurajima",
+  "version": "0.2.0",
+  "description": "Deterministic macOS development environment with client workspace isolation",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "postinstall": "echo 'Run ./install.sh to complete Sakurajima setup, then use skr command'",
+    "test": "bats tests/",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/"
+  },
+  "bin": {
+    "skr": "./src/cli/skr.ts",
+    "sakurajima-time-start": "./src/time/start.ts",
+    "sakurajima-time-init": "./src/time/init.ts",
+    "sakurajima-unfocus": "./src/time/unfocus.ts",
+    "sakurajima-stats": "./src/time/stats.ts",
+    "sakurajima-time-cleanup": "./src/time/cleanup.ts",
+    "verify-system": "./src/verify-system.ts",
+    "new-client": "./src/client/new.ts"
+  },
+  "dependencies": {
+    "zx": "^8.2.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  }
+}

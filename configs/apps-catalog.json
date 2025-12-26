@@ -1,0 +1,204 @@
+{
+  "docker": [
+    {
+      "name": "PostgreSQL",
+      "slug": "postgres",
+      "image": "postgres:17-alpine",
+      "description": "PostgreSQL database server",
+      "category": "database",
+      "port": "5432:5432",
+      "env": ["POSTGRES_PASSWORD=postgres"],
+      "volume": "~/workspace/data/postgres:/var/lib/postgresql/data"
+    },
+    {
+      "name": "Redis",
+      "slug": "redis",
+      "image": "redis:7-alpine",
+      "description": "In-memory data structure store",
+      "category": "database",
+      "port": "6379:6379",
+      "volume": "~/workspace/data/redis:/data"
+    },
+    {
+      "name": "MongoDB",
+      "slug": "mongodb",
+      "image": "mongo:7",
+      "description": "NoSQL document database",
+      "category": "database",
+      "port": "27017:27017",
+      "env": ["MONGO_INITDB_ROOT_USERNAME=root", "MONGO_INITDB_ROOT_PASSWORD=mongo"],
+      "volume": "~/workspace/data/mongodb:/data/db"
+    },
+    {
+      "name": "MySQL",
+      "slug": "mysql",
+      "image": "mysql:8",
+      "description": "MySQL relational database",
+      "category": "database",
+      "port": "3306:3306",
+      "env": ["MYSQL_ROOT_PASSWORD=mysql"],
+      "volume": "~/workspace/data/mysql:/var/lib/mysql"
+    },
+    {
+      "name": "Nginx",
+      "slug": "nginx",
+      "image": "nginx:alpine",
+      "description": "High-performance web server",
+      "category": "web",
+      "port": "8080:80"
+    },
+    {
+      "name": "Mailhog",
+      "slug": "mailhog",
+      "image": "mailhog/mailhog:latest",
+      "description": "Email testing tool",
+      "category": "development",
+      "port": "1025:1025,8025:8025"
+    },
+    {
+      "name": "MinIO",
+      "slug": "minio",
+      "image": "minio/minio:latest",
+      "description": "S3-compatible object storage",
+      "category": "storage",
+      "port": "9000:9000,9001:9001",
+      "env": ["MINIO_ROOT_USER=minioadmin", "MINIO_ROOT_PASSWORD=minioadmin"],
+      "volume": "~/workspace/data/minio:/data",
+      "command": "server /data --console-address :9001"
+    },
+    {
+      "name": "Elasticsearch",
+      "slug": "elasticsearch",
+      "image": "elasticsearch:8.11.0",
+      "description": "Search and analytics engine",
+      "category": "database",
+      "port": "9200:9200",
+      "env": ["discovery.type=single-node", "xpack.security.enabled=false"],
+      "volume": "~/workspace/data/elasticsearch:/usr/share/elasticsearch/data"
+    },
+    {
+      "name": "RabbitMQ",
+      "slug": "rabbitmq",
+      "image": "rabbitmq:3-management",
+      "description": "Message broker",
+      "category": "messaging",
+      "port": "5672:5672,15672:15672"
+    },
+    {
+      "name": "LocalStack",
+      "slug": "localstack",
+      "image": "localstack/localstack:latest",
+      "description": "Local AWS cloud stack",
+      "category": "development",
+      "port": "4566:4566",
+      "env": ["SERVICES=s3,dynamodb,sqs,sns,lambda"]
+    }
+  ],
+  "homebrew": [
+    {
+      "name": "Obsidian",
+      "slug": "obsidian",
+      "cask": "obsidian",
+      "description": "Knowledge base and note-taking app",
+      "category": "productivity"
+    },
+    {
+      "name": "Slack",
+      "slug": "slack",
+      "cask": "slack",
+      "description": "Team communication platform",
+      "category": "communication"
+    },
+    {
+      "name": "Discord",
+      "slug": "discord",
+      "cask": "discord",
+      "description": "Voice, video, and text chat",
+      "category": "communication"
+    },
+    {
+      "name": "Spotify",
+      "slug": "spotify",
+      "cask": "spotify",
+      "description": "Music streaming service",
+      "category": "entertainment"
+    },
+    {
+      "name": "VLC",
+      "slug": "vlc",
+      "cask": "vlc",
+      "description": "Multimedia player",
+      "category": "entertainment"
+    },
+    {
+      "name": "Postman",
+      "slug": "postman",
+      "cask": "postman",
+      "description": "API development platform",
+      "category": "development"
+    },
+    {
+      "name": "TablePlus",
+      "slug": "tableplus",
+      "cask": "tableplus",
+      "description": "Database management tool",
+      "category": "development"
+    },
+    {
+      "name": "Insomnia",
+      "slug": "insomnia",
+      "cask": "insomnia",
+      "description": "API client and design platform",
+      "category": "development"
+    },
+    {
+      "name": "Rectangle Pro",
+      "slug": "rectangle-pro",
+      "cask": "rectangle-pro",
+      "description": "Window management (paid)",
+      "category": "productivity"
+    },
+    {
+      "name": "Fork",
+      "slug": "fork",
+      "cask": "fork",
+      "description": "Git client",
+      "category": "development"
+    },
+    {
+      "name": "Transmit",
+      "slug": "transmit",
+      "cask": "transmit",
+      "description": "File transfer client",
+      "category": "productivity"
+    },
+    {
+      "name": "Fig",
+      "slug": "fig",
+      "cask": "fig",
+      "description": "Terminal autocomplete",
+      "category": "development"
+    },
+    {
+      "name": "Warp",
+      "slug": "warp",
+      "cask": "warp",
+      "description": "Modern terminal",
+      "category": "development"
+    },
+    {
+      "name": "Notion",
+      "slug": "notion",
+      "cask": "notion",
+      "description": "All-in-one workspace",
+      "category": "productivity"
+    },
+    {
+      "name": "Linear",
+      "slug": "linear",
+      "cask": "linear-linear",
+      "description": "Issue tracking tool",
+      "category": "productivity"
+    }
+  ]
+}

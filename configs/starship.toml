@@ -1,9 +1,8 @@
-# 🏴 SAKURAJIMA STARSHIP — 0.1.0-alpha
+# Sakurajima Starship Prompt
 
 add_newline = true
-command_timeout = 800
+command_timeout = 500
 
-# Use triple quotes for multi-line format safely
 format = """
 $directory\
 $custom\
@@ -14,28 +13,93 @@ $golang\
 $python\
 $rust\
 $docker_context\
+$cmd_duration\
+$line_break\
 $character\
 """
 
 [directory]
-truncate_to_repo = false
 truncation_length = 3
+style = "bold cyan"
+read_only = " 󰌾"
 
-# Client segment: only appears when SAKURAJIMA_CLIENT is set
 [custom.sakurajima_client]
-command = "echo \"$SAKURAJIMA_CLIENT\""
+command = "echo $SAKURAJIMA_CLIENT"
 when = "test -n \"$SAKURAJIMA_CLIENT\""
-format = "  [client:$output]($style)"
+format = " [󰖟 $output]($style)"
 style = "bold yellow"
+ignore_timeout = true
 
 [git_branch]
-format = " [$branch]($style)"
+format = " [$symbol$branch(:$remote_branch)]($style)"
+symbol = " "
 style = "bold purple"
+truncation_length = 30
 
 [git_status]
-format = " [$all_status$ahead_behind]($style)"
+format = "[$all_status$ahead_behind]($style)"
+style = "bold red"
+conflicted = "="
+ahead = "⇡${count}"
+behind = "⇣${count}"
+diverged = "⇕⇡${ahead_count}⇣${behind_count}"
+untracked = "?"
+stashed = "≡"
+modified = "!"
+staged = "+"
+renamed = "»"
+deleted = "✘"
+
+[git_commit]
+disabled = true
+
+[nodejs]
+format = " [$symbol($version)]($style)"
+symbol = " "
+style = "bold green"
+
+[golang]
+format = " [$symbol($version)]($style)"
+symbol = " "
+style = "bold cyan"
+
+[python]
+format = " [$symbol($version)]($style)"
+symbol = " "
+style = "bold yellow"
+
+[rust]
+format = " [$symbol($version)]($style)"
+symbol = " "
 style = "bold red"
 
+[docker_context]
+format = " [$symbol$context]($style)"
+symbol = " "
+style = "bold blue"
+only_with_files = true
+
 [character]
-success_symbol = "❯"
-error_symbol = "❯"
+success_symbol = "[❯](bold green)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold green)"
+
+[cmd_duration]
+min_time = 2000
+format = " [$duration]($style)"
+style = "bold yellow"
+
+[package]
+disabled = true
+
+[aws]
+disabled = true
+
+[gcloud]
+disabled = true
+
+[kubernetes]
+disabled = true
+
+[terraform]
+disabled = true

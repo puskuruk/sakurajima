@@ -1,46 +1,150 @@
-# 🏴 SAKURAJIMA AEROSPACE BASE — 0.1.0-alpha
-# Base template that generator expands into ~/.config/aerospace.toml
+# =============================================================================
+# SAKURAJIMA AEROSPACE CONFIGURATION
+# Version: 0.2.0
+# =============================================================================
+# A complete AeroSpace tiling window manager configuration following official
+# best practices from https://nikitabobko.github.io/AeroSpace/guide
+#
+# Features:
+# - Vim-style navigation (hjkl)
+# - Multiple binding modes (main, resize, service)
+# - Dynamic client workspaces (auto-generated)
+# - simple-bar integration via callbacks (no polling)
+# - Multi-monitor support
+# - Smart app routing
+# =============================================================================
 
-# Core settings
+# Enable latest AeroSpace features
+config-version = 2
+
+# Startup behavior
 start-at-login = true
-accordion-padding = 30
 
-# Enable normalization for better window handling
+# Commands to run after AeroSpace starts
+after-startup-command = [
+  'exec-and-forget osascript -e "tell application id \"tracesOf.Uebersicht\" to refresh widget id \"simple-bar-index-jsx\""',
+]
+
+# Normalization settings (recommended defaults)
+# Flatten: eliminates single-child containers for cleaner tree
 enable-normalization-flatten-containers = true
+# Opposite orientation: nested containers use perpendicular orientations
 enable-normalization-opposite-orientation-for-nested-containers = true
 
-# Gaps (set to 0 for no gaps, increase for visual spacing)
+# Accordion layout padding (space between stacked windows)
+accordion-padding = 30
+
+# Default layout for new workspaces
+default-root-container-layout = 'tiles'
+# auto: horizontal on wide monitors, vertical on tall
+default-root-container-orientation = 'auto'
+
+# Mouse behavior and simple-bar refresh
+on-focus-changed = [
+  'move-mouse window-lazy-center',
+  'exec-and-forget osascript -e "tell application id \"tracesOf.Uebersicht\" to refresh widget id \"simple-bar-index-jsx\""',
+]
+
+# =============================================================================
+# GAPS CONFIGURATION
+# =============================================================================
+
 [gaps]
 inner.horizontal = 8
-inner.vertical =   8
-outer.left =       8
-outer.bottom =     8
-outer.top =        8
-outer.right =      8
+inner.vertical = 8
+outer.left = 8
+outer.bottom = 8
+outer.top = 8
+outer.right = 8
+
+# =============================================================================
+# SIMPLE-BAR INTEGRATION (Event-driven via Übersicht)
+# =============================================================================
+
+# Trigger simple-bar refresh on workspace change
+exec-on-workspace-change = [
+  '/bin/zsh', '-c',
+  '/usr/bin/osascript -e "tell application id \"tracesOf.Uebersicht\" to refresh widget id \"simple-bar-index-jsx\""'
+]
+
+# =============================================================================
+# MAIN MODE BINDINGS
+# =============================================================================
 
 [mode.main.binding]
-# Focus (vim)
+
+# -----------------------------------------------------------------------------
+# Window Focus (vim-style)
+# alt + h/j/k/l = focus left/down/up/right
+# -----------------------------------------------------------------------------
 alt-h = 'focus left'
 alt-j = 'focus down'
 alt-k = 'focus up'
 alt-l = 'focus right'
 
-# Move (vim)
+# Focus back and forth between last two windows
+alt-tab = 'focus-back-and-forth'
+
+# -----------------------------------------------------------------------------
+# Window Movement (vim-style)
+# alt + shift + h/j/k/l = move left/down/up/right
+# -----------------------------------------------------------------------------
 alt-shift-h = 'move left'
 alt-shift-j = 'move down'
 alt-shift-k = 'move up'
 alt-shift-l = 'move right'
 
-ctrl-alt-cmd-h = 'resize width -50'
-ctrl-alt-cmd-l = 'resize width +50'
-ctrl-alt-cmd-k = 'resize height -50'
-ctrl-alt-cmd-j = 'resize height +50'
+# -----------------------------------------------------------------------------
+# Window Swap (exchange positions)
+# ctrl + alt + h/j/k/l = swap with neighbor
+# -----------------------------------------------------------------------------
+ctrl-alt-h = 'swap left'
+ctrl-alt-j = 'swap down'
+ctrl-alt-k = 'swap up'
+ctrl-alt-l = 'swap right'
 
-# Layout / fullscreen
-alt-enter = 'layout tiles horizontal vertical'
+# -----------------------------------------------------------------------------
+# Layout Commands
+# -----------------------------------------------------------------------------
+# Toggle between tile layouts (horizontal <-> vertical)
+alt-slash = 'layout tiles horizontal vertical'
+# Toggle between accordion layouts
+alt-comma = 'layout accordion horizontal vertical'
+# Switch between tiling and floating
+alt-shift-space = 'layout floating tiling'
+# Fullscreen toggle
 alt-f = 'fullscreen'
+# macOS native fullscreen
+alt-shift-f = 'macos-native-fullscreen'
+# Split orientation
+alt-backslash = 'split horizontal'
+alt-shift-backslash = 'split vertical'
+# Join with neighbor (merge containers)
+alt-shift-semicolon = 'join-with left'
+# Balance all windows in workspace
+alt-shift-equal = 'balance-sizes'
 
-# Core workspaces (fixed)
+# -----------------------------------------------------------------------------
+# Resize Mode (enter with alt-r)
+# -----------------------------------------------------------------------------
+alt-r = 'mode resize'
+
+# Quick resize in main mode
+alt-minus = 'resize smart -50'
+alt-equal = 'resize smart +50'
+
+# -----------------------------------------------------------------------------
+# Service Mode (enter with alt-shift-semicolon)
+# For less common operations
+# -----------------------------------------------------------------------------
+alt-shift-slash = 'mode service'
+
+# -----------------------------------------------------------------------------
+# Core Workspaces (Fixed)
+# T = Terminal, I = IDE, W = Web, M = Messages
+# alt + 1/2/3/4 = switch to workspace
+# alt + shift + 1/2/3/4 = move window to workspace
+# -----------------------------------------------------------------------------
 alt-1 = 'workspace T'
 alt-2 = 'workspace I'
 alt-3 = 'workspace W'
@@ -51,11 +155,99 @@ alt-shift-2 = 'move-node-to-workspace I'
 alt-shift-3 = 'move-node-to-workspace W'
 alt-shift-4 = 'move-node-to-workspace M'
 
+# Workspace back-and-forth (toggle between last two workspaces)
+alt-backtick = 'workspace-back-and-forth'
+
+# Workspace navigation (next/prev)
+alt-bracketleft = 'workspace prev'
+alt-bracketright = 'workspace next'
+
+# -----------------------------------------------------------------------------
+# Multi-Monitor Support
+# ctrl + alt + arrow = focus monitor
+# ctrl + alt + shift + arrow = move window to monitor
+# -----------------------------------------------------------------------------
+ctrl-alt-left = 'focus-monitor left'
+ctrl-alt-right = 'focus-monitor right'
+ctrl-alt-up = 'focus-monitor up'
+ctrl-alt-down = 'focus-monitor down'
+
+ctrl-alt-shift-left = 'move-node-to-monitor --focus-follows-window left'
+ctrl-alt-shift-right = 'move-node-to-monitor --focus-follows-window right'
+ctrl-alt-shift-up = 'move-node-to-monitor --focus-follows-window up'
+ctrl-alt-shift-down = 'move-node-to-monitor --focus-follows-window down'
+
+# Move workspace to monitor
+ctrl-alt-cmd-left = 'move-workspace-to-monitor left'
+ctrl-alt-cmd-right = 'move-workspace-to-monitor right'
+
 # >>> SAKURAJIMA GENERATED CLIENTS >>>
-# (generator injects here)
+# Client workspaces are injected here by generate-aerospace-config
+# Bindings: ctrl-alt-cmd-[1-9] = workspace <client>
+#           ctrl-alt-cmd-shift-[1-9] = move-node-to-workspace <client>
 # <<< SAKURAJIMA GENERATED CLIENTS <<<
 
-# App routing - automatically move apps to designated workspaces
+# =============================================================================
+# RESIZE MODE
+# =============================================================================
+
+[mode.resize.binding]
+# Resize with h/j/k/l (vim-style)
+h = 'resize width -50'
+j = 'resize height +50'
+k = 'resize height -50'
+l = 'resize width +50'
+
+# Larger increments with shift
+shift-h = 'resize width -100'
+shift-j = 'resize height +100'
+shift-k = 'resize height -100'
+shift-l = 'resize width +100'
+
+# Smart resize (resizes in "natural" direction)
+minus = 'resize smart -50'
+equal = 'resize smart +50'
+
+# Balance all windows
+b = 'balance-sizes'
+
+# Flatten workspace tree (reset layout)
+f = 'flatten-workspace-tree'
+
+# Exit resize mode
+escape = 'mode main'
+enter = 'mode main'
+
+# =============================================================================
+# SERVICE MODE
+# For less common operations and system commands
+# =============================================================================
+
+[mode.service.binding]
+# Reload configuration
+r = ['reload-config', 'mode main']
+
+# Flatten workspace tree
+f = ['flatten-workspace-tree', 'mode main']
+
+# Close all windows but current
+c = ['close-all-windows-but-current', 'mode main']
+
+# Enable/disable AeroSpace
+e = ['enable toggle', 'mode main']
+
+# Exit service mode
+escape = 'mode main'
+enter = 'mode main'
+
+# =============================================================================
+# APP ROUTING (on-window-detected)
+# Automatically move apps to designated workspaces
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Terminal Apps -> Workspace T
+# -----------------------------------------------------------------------------
 [[on-window-detected]]
 if.app-id = 'com.apple.Terminal'
 run = ['move-node-to-workspace T']
@@ -69,11 +261,61 @@ if.app-id = 'io.alacritty'
 run = ['move-node-to-workspace T']
 
 [[on-window-detected]]
+if.app-id = 'com.github.wez.wezterm'
+run = ['move-node-to-workspace T']
+
+[[on-window-detected]]
+if.app-id = 'net.kovidgoyal.kitty'
+run = ['move-node-to-workspace T']
+
+# -----------------------------------------------------------------------------
+# IDE/Editor Apps -> Workspace I
+# -----------------------------------------------------------------------------
+[[on-window-detected]]
+if.app-id = 'com.microsoft.VSCode'
+run = ['move-node-to-workspace I']
+
+[[on-window-detected]]
+if.app-id = 'com.todesktop.230313mzl4w4u92'
+run = ['move-node-to-workspace I']
+
+[[on-window-detected]]
+if.app-id = 'com.jetbrains.intellij'
+run = ['move-node-to-workspace I']
+
+[[on-window-detected]]
+if.app-id = 'com.jetbrains.WebStorm'
+run = ['move-node-to-workspace I']
+
+[[on-window-detected]]
+if.app-id = 'com.jetbrains.pycharm'
+run = ['move-node-to-workspace I']
+
+[[on-window-detected]]
+if.app-id = 'com.jetbrains.goland'
+run = ['move-node-to-workspace I']
+
+[[on-window-detected]]
+if.app-id = 'org.vim.MacVim'
+run = ['move-node-to-workspace I']
+
+[[on-window-detected]]
+if.app-id = 'com.sublimetext.4'
+run = ['move-node-to-workspace I']
+
+# -----------------------------------------------------------------------------
+# Browser Apps -> Workspace W
+# -----------------------------------------------------------------------------
+[[on-window-detected]]
 if.app-id = 'com.google.Chrome'
 run = ['move-node-to-workspace W']
 
 [[on-window-detected]]
 if.app-id = 'org.mozilla.firefox'
+run = ['move-node-to-workspace W']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.Safari'
 run = ['move-node-to-workspace W']
 
 [[on-window-detected]]
@@ -85,13 +327,16 @@ if.app-id = 'company.thebrowser.Browser'
 run = ['move-node-to-workspace W']
 
 [[on-window-detected]]
-if.app-id = 'com.microsoft.VSCode'
-run = ['move-node-to-workspace I']
+if.app-id = 'com.vivaldi.Vivaldi'
+run = ['move-node-to-workspace W']
 
 [[on-window-detected]]
-if.app-id = 'com.jetbrains.intellij'
-run = ['move-node-to-workspace I']
+if.app-id = 'com.operasoftware.Opera'
+run = ['move-node-to-workspace W']
 
+# -----------------------------------------------------------------------------
+# Communication Apps -> Workspace M
+# -----------------------------------------------------------------------------
 [[on-window-detected]]
 if.app-id = 'com.apple.mail'
 run = ['move-node-to-workspace M']
@@ -101,9 +346,61 @@ if.app-id = 'com.tinyspeck.slackmacgap'
 run = ['move-node-to-workspace M']
 
 [[on-window-detected]]
-if.app-id = 'com.raycast.macos'
+if.app-id = 'com.hnc.Discord'
 run = ['move-node-to-workspace M']
 
 [[on-window-detected]]
-if.app-id = 'com.hnc.Discord'
+if.app-id = 'ru.keepcoder.Telegram'
 run = ['move-node-to-workspace M']
+
+[[on-window-detected]]
+if.app-id = 'com.microsoft.teams2'
+run = ['move-node-to-workspace M']
+
+[[on-window-detected]]
+if.app-id = 'us.zoom.xos'
+run = ['move-node-to-workspace M']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.MobileSMS'
+run = ['move-node-to-workspace M']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.FaceTime'
+run = ['move-node-to-workspace M']
+
+# -----------------------------------------------------------------------------
+# Floating Windows (don't tile these)
+# -----------------------------------------------------------------------------
+[[on-window-detected]]
+if.app-id = 'com.apple.systempreferences'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.SystemPreferences'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.finder'
+if.window-title-regex-substring = '(Copy|Move|Trash|Info|Connecting)'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.raycast.macos'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.calculator'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.apple.ActivityMonitor'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.1password.1password'
+run = ['layout floating']
+
+[[on-window-detected]]
+if.app-id = 'com.agilebits.onepassword7'
+run = ['layout floating']

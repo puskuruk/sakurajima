@@ -1,0 +1,53 @@
+# OS
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependencies
+node_modules/
+vendor/
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Build
+dist/
+build/
+out/
+target/
+*.o
+*.a
+
+# Logs
+*.log
+logs/
+
+# Secrets (never commit)
+.env
+.env.local
+*.pem
+*.key
+credentials.json
+
+# Coverage
+coverage/
+.nyc_output/
+.coverage
+
+# Temp
+tmp/
+temp/
+*.tmp
+*.bak
+
+**/.claude/settings.local.json

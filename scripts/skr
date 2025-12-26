@@ -2,7 +2,8 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 # Add own directory to PATH to find sibling scripts (robustness)
-export PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd):$PATH"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+export PATH="$SCRIPT_DIR:$PATH"
 # 🏴 SAKURAJIMA CLI (skr)
 # The unified entry point for the Sakurajima environment.
 

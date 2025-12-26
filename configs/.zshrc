@@ -1,17 +1,18 @@
-# 🏴 SAKURAJIMA ZSHRC — v5.0
-# Deterministic, fast, client-aware, guard-wired.
+# shellcheck shell=bash disable=SC1091
+# Sakurajima zshrc
 
-# PATH invariants
 export PATH="$HOME/.local/bin:$PATH"
 
-# History (large, shared, sane)
+# History
 export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=200000
 export SAVEHIST=200000
 setopt hist_ignore_dups hist_reduce_blanks share_history inc_append_history
 
-# Completion (fast + deterministic cache)
+# Completion
 autoload -Uz compinit
+# Add custom completions path
+fpath=("$HOME/.config/zsh/completions" $fpath)
 ZSH_COMPDUMP="${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump"
 mkdir -p "${ZSH_COMPDUMP:h}" 2>/dev/null || true
 compinit -d "$ZSH_COMPDUMP" -C
@@ -20,71 +21,58 @@ compinit -d "$ZSH_COMPDUMP" -C
 bindkey -e
 bindkey '^R' history-incremental-search-backward
 
-# Quality-of-life tools (optional)
-if command -v direnv >/dev/null 2>&1; then
-  eval "$(direnv hook zsh)"
-fi
-if command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
-fi
+# Tools
+command -v direnv >/dev/null 2>&1 && eval "$(direnv hook zsh)"
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
 
-# --- ENV: Browser Dev ---
+# Browser dev
 export PATH="$HOME/workspace/depot_tools:$PATH"
 
-# --- ENV: Unified Version Manager (mise) ---
-# Abstracted language management (Node, Go, Python, etc.)
-if command -v mise >/dev/null 2>&1; then
-  eval "$(mise activate zsh)"
-fi
-
-# -------------------------------------------------------------------
-# Client detection (NO hardcoding)
-# Rule: if cwd is under ~/workspace/clients/<client>/..., SAKURAJIMA_CLIENT=<client>
-# -------------------------------------------------------------------
+# Client detection
 detect_sakurajima_client() {
-  local p="${PWD:A}"
-  local root="$HOME/workspace/clients/"
-  if [[ "$p" == ${root}* ]]; then
-    local rest="${p#${root}}"
-    local c="${rest%%/*}"
-    if [[ -n "$c" && "$c" != "_archive" ]]; then
-      export SAKURAJIMA_CLIENT="$c"
-      return 0
-    fi
+  local p="${PWD:A}" root="$HOME/workspace/clients/"
+  if [[ "$p" == "${root}"* ]]; then
+    local c="${${p#"${root}"}%%/*}"
+    [[ -n "$c" && "$c" != "_archive" ]] && export SAKURAJIMA_CLIENT="$c" && return
   fi
   unset SAKURAJIMA_CLIENT
 }
-
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd detect_sakurajima_client
 add-zsh-hook chpwd detect_sakurajima_client
 
-# -------------------------------------------------------------------
-# Guards (wrap commands only if guard scripts exist)
-# -------------------------------------------------------------------
-if [[ -x "$HOME/.local/bin/kubectl-guard" ]]; then
-  kubectl() { "$HOME/.local/bin/kubectl-guard" "$@"; }
-fi
-if [[ -x "$HOME/.local/bin/terraform-guard" ]]; then
-  terraform() { "$HOME/.local/bin/terraform-guard" "$@"; }
-fi
+# Guards
+[[ -x "$HOME/.local/bin/kubectl-guard" ]] && kubectl() { "$HOME/.local/bin/kubectl-guard" "$@"; }
+[[ -x "$HOME/.local/bin/terraform-guard" ]] && terraform() { "$HOME/.local/bin/terraform-guard" "$@"; }
 
-# -------------------------------------------------------------------
-# Starship prompt
-# -------------------------------------------------------------------
+# Prompt
 if command -v starship >/dev/null 2>&1; then
   export STARSHIP_CONFIG="$HOME/.config/starship.toml"
   eval "$(starship init zsh)"
 fi
 
-# Aliases (minimal, deterministic)
+# Focus/unfocus
+focus() {
+  local client="$1"
+  [[ -z "$client" ]] && echo "Usage: focus <client>" >&2 && return 1
+  skr focus "$client" || return 1
+  local dir="$HOME/workspace/clients/$client"
+  [[ "$client" == "personal" ]] && dir="$HOME/workspace/personal"
+  [[ -d "$dir" ]] && cd "$dir" && echo "→ $dir"
+  local key="$HOME/.ssh/keys/$client/id_ed25519"
+  [[ -f "$key" ]] && { ssh-add -l 2>/dev/null | grep -q "$key" || ssh-add "$key" 2>/dev/null; }
+}
+unfocus() { skr unfocus; }
+
+# Aliases
 alias ll='eza -la --group-directories-first 2>/dev/null || ls -la'
 alias gs='git status -sb'
 alias ..='cd ..'
+command -v bat >/dev/null 2>&1 && alias cat='bat'
+command -v lazygit >/dev/null 2>&1 && alias lg='lazygit'
 
-# Power Aliases
-if command -v bat >/dev/null 2>&1; then alias cat='bat'; fi
-if command -v lazygit >/dev/null 2>&1; then alias lg='lazygit'; fi
+alias python='python3'
 
-# Local Overrides (ignored by git)
+# Local overrides
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"

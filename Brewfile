@@ -12,9 +12,8 @@ cask "docker-desktop"
 brew "lazydocker"  # Docker TUI (Omarchy-style container management)
 
 # --- Window manager ---
-tap "FelixKratz/formulae"
-brew "sketchybar"
 cask "aerospace"
+cask "ubersicht"     # Widget platform for simple-bar
 
 # --- Productivity ---
 cask "raycast"

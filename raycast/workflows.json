@@ -8,9 +8,14 @@
     "sakurajima-infra-up",
     "sakurajima-infra-down",
     "sakurajima-focus-client",
-    "sakurajima-focus-<client>"
+    "sakurajima-focus-<client>",
+    "browse-docker-apps",
+    "browse-brew-apps",
+    "install-docker-app",
+    "install-brew-app"
   ],
   "notes": [
-    "This is a repo manifest; Raycast itself uses script headers inside each script."
+    "This is a repo manifest; Raycast itself uses script headers inside each script.",
+    "App installation commands are Omakub-inspired for quick Docker and Homebrew app deployment"
   ]
 }

@@ -44,10 +44,8 @@ if command -v aerospace >/dev/null 2>&1; then
   aerospace reload-config || warn "AeroSpace reload had warnings"
 fi
 
-info "Reload SketchyBar (if available)"
-if command -v sketchybar >/dev/null 2>&1; then
-  sketchybar --reload || warn "SketchyBar reload had warnings"
-fi
+info "Refresh simple-bar via Übersicht"
+osascript -e 'tell application id "tracesOf.Uebersicht" to refresh widget id "simple-bar-index-jsx"' 2>/dev/null || true
 
 info "Verify system"
 command -v verify-system >/dev/null 2>&1 || die "verify-system not found in PATH"
